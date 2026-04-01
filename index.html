@@ -167,6 +167,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   <div id="tt"></div>
 </div>
 
+<noscript><div class="wrap"><div class="card"><div class="ctitle" style="color:#d84030;">JavaScript is required to render the timetable. Please enable JS and reload.</div></div></div></noscript>
+
 <button class="fab" onclick="goToday()">📍</button>
 <div class="toast" id="toast"></div>
 
@@ -306,6 +308,9 @@ function render(){
 }
 
 load();render();updCD();
+if(!document.getElementById('tt').innerHTML.trim()){
+  document.getElementById('tt').innerHTML='<div class="card"><div class="ctitle" style="color:#d84030;">Unable to render timetable. Please reload the page.</div></div>';
+}
 setInterval(updCD,60000);
 setTimeout(goToday,500);
 window.addEventListener('resize',fixPad);
