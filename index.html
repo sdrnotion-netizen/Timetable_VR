@@ -3,317 +3,561 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>CA Inter G2 — May 2026</title>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="CA Inter G2"/>
+<meta name="theme-color" content="#1a1614"/>
+<title>CA Inter G2 — May 2026 Timetable</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
-:root{
-  --bg:#f4f1ec;--paper:#fffdf8;--ink:#1a1614;--ink2:#4a4440;--ink3:#8a837d;
-  --p5:#1a5c8a;--p5l:#d8ecf8;--p5m:#7fbfe0;
-  --p6a:#b85500;--p6al:#fde8d0;--p6am:#f0a860;
-  --p6b:#5c3a90;--p6bl:#ece0f8;--p6bm:#b898e0;
-  --rev:#276b45;--revl:#d0eedd;--revm:#78c898;
-  --ex:#d84030;--exl:#fde8e4;
-  --bd:#ddd8d0;--sh:0 1px 8px rgba(0,0,0,0.08);--sh2:0 4px 20px rgba(0,0,0,0.13);
+
+:root {
+  --bg: #f2ede6;
+  --paper: #fffdf8;
+  --ink: #1a1614;
+  --ink-muted: #7a7068;
+  --p5: #1a5c8a;
+  --p5-light: #d8ecf8;
+  --p5-mid: #9ac6e0;
+  --p6a: #b35800;
+  --p6a-light: #fde9d4;
+  --p6a-mid: #f2b07e;
+  --p6b: #5a3e8c;
+  --p6b-light: #ebe4f8;
+  --p6b-mid: #c2abe6;
+  --rev: #2a7a4a;
+  --rev-light: #d4f0e0;
+  --rev-mid: #8cd0aa;
+  --exam-red: #d94030;
+  --border: #ddd8d0;
+  --check: #2a7a4a;
+  --header-h: 138px;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
 
-/* ─── FIXED HEADER ─── */
-#stickyHead{
-  position:fixed;top:0;left:0;right:0;z-index:999;
-  background:rgba(250,248,244,0.97);
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--bd);
-  box-shadow:0 2px 16px rgba(0,0,0,0.09);
-  padding:12px 16px 0;
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  padding-top: var(--header-h);
 }
-.ht{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
-.ht-title{font-family:'Playfair Display',serif;font-size:1.02rem;font-weight:900;line-height:1.2}
-.ht-sub{font-size:0.66rem;color:var(--ink3);margin-top:2px}
-.epills{display:flex;gap:5px;flex-shrink:0}
-.ep{font-family:'DM Mono',monospace;font-size:0.58rem;font-weight:500;padding:3px 8px;border-radius:7px;text-align:center;line-height:1.4;background:var(--exl);color:var(--ex);border:1px solid #f4b8b0}
-.ep b{display:block;font-size:0.75rem;font-weight:700}
-.pr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.pt{flex:1;background:var(--bd);border-radius:99px;height:6px;overflow:hidden}
-.pf{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--rev),#5ac880);transition:width .5s ease}
-.pp{font-family:'DM Mono',monospace;font-size:0.8rem;font-weight:500;color:var(--rev);min-width:32px}
-.pc{font-size:0.67rem;color:var(--ink3);white-space:nowrap}
-.tabs{display:flex;gap:5px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{flex-shrink:0;padding:5px 13px;border:1.5px solid var(--bd);border-radius:99px;background:transparent;font-family:'DM Sans',sans-serif;font-size:0.7rem;font-weight:600;color:var(--ink3);cursor:pointer;transition:all .15s;white-space:nowrap}
-.tab.on-all{background:var(--ink);border-color:var(--ink);color:#fff}
-.tab.on-p5{background:var(--p5l);border-color:var(--p5);color:var(--p5)}
-.tab.on-p6a{background:var(--p6al);border-color:var(--p6a);color:var(--p6a)}
-.tab.on-p6b{background:var(--p6bl);border-color:var(--p6b);color:var(--p6b)}
-.tab.on-rev{background:var(--revl);border-color:var(--rev);color:var(--rev)}
 
-/* ─── WRAP ─── */
-.wrap{padding:16px 14px 80px;max-width:640px;margin:0 auto}
-.stats{display:flex;gap:7px;margin-bottom:14px}
-.sb{flex:1;background:var(--paper);border:1px solid var(--bd);border-radius:10px;padding:9px 8px;text-align:center;box-shadow:var(--sh)}
-.sn{font-family:'DM Mono',monospace;font-size:1.05rem;font-weight:500;line-height:1}
-.sl{font-size:0.6rem;color:var(--ink3);margin-top:3px;font-weight:500}
-.sn.cp5{color:var(--p5)}.sn.cp6a{color:var(--p6a)}.sn.cp6b{color:var(--p6b)}.sn.crev{color:var(--rev)}
-.legend{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
-.leg{display:flex;align-items:center;gap:5px;font-size:0.69rem;font-weight:500;color:var(--ink3)}
-.ld{width:8px;height:8px;border-radius:2px;flex-shrink:0}
-
-/* ─── PHASE ─── */
-.phd{display:flex;align-items:center;gap:8px;margin:22px 0 10px;font-family:'Playfair Display',serif;font-size:0.88rem;font-weight:700}
-.phd .bar{flex:1;height:1px;background:var(--bd)}
-.phd .ptag{font-family:'DM Mono',monospace;font-size:0.6rem;font-weight:500;padding:2px 7px;border-radius:99px;white-space:nowrap;background:#f0ece5;color:var(--ink3)}
-
-/* ─── TODAY MARKER ─── */
-.tday{display:flex;align-items:center;gap:7px;margin:12px 0}
-.tday .tl{flex:1;height:2px;background:var(--ex)}
-.tday .tp{background:var(--ex);color:#fff;font-size:0.62rem;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap}
-
-/* ─── DIVIDER ─── */
-.rdiv{display:flex;align-items:center;gap:7px;margin:5px 0;font-size:0.67rem;color:var(--rev);font-weight:600;opacity:.75}
-.rdiv .dl{flex:1;height:1px;background:var(--revm)}
-
-/* ─── CARD ─── */
-.card{
-  background:var(--paper);border:1px solid var(--bd);border-left:4px solid var(--bd);
-  border-radius:12px;padding:12px 13px;margin-bottom:8px;
-  box-shadow:var(--sh);position:relative;overflow:hidden;
+/* ── FIXED HEADER ── */
+.fixed-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 999;
+  background: var(--ink);
+  padding: 10px 16px 8px;
+  box-shadow: 0 3px 16px rgba(0,0,0,0.28);
 }
-.card::before{content:'';position:absolute;top:0;right:0;width:55px;height:55px;border-radius:0 12px 0 55px;opacity:.055}
-.card.p5{border-left-color:var(--p5)}.card.p5::before{background:var(--p5)}
-.card.p6a{border-left-color:var(--p6a)}.card.p6a::before{background:var(--p6a)}
-.card.p6b{border-left-color:var(--p6b)}.card.p6b::before{background:var(--p6b)}
-.card.rev{border-left-color:var(--rev);background:#f6fdf8}.card.rev::before{background:var(--rev)}
-.card.excard{border-left-color:var(--ex);background:var(--exl)}.card.excard::before{background:var(--ex)}
-.card.tcard{box-shadow:var(--sh2);border-color:#c0b8b0}
-.card.adone{opacity:.42}
 
-.ctop{display:flex;align-items:flex-start;gap:9px}
-.dchip{font-family:'DM Mono',monospace;font-size:0.64rem;font-weight:500;padding:3px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0;margin-top:1px}
-.p5 .dchip{background:var(--p5l);color:var(--p5)}.p6a .dchip{background:var(--p6al);color:var(--p6a)}
-.p6b .dchip{background:var(--p6bl);color:var(--p6b)}.rev .dchip{background:var(--revl);color:var(--rev)}
-.excard .dchip{background:#fde0dc;color:var(--ex)}
-.ci{flex:1;min-width:0}
-.csub{font-size:0.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px}
-.p5 .csub{color:var(--p5)}.p6a .csub{color:var(--p6a)}.p6b .csub{color:var(--p6b)}.rev .csub{color:var(--rev)}.excard .csub{color:var(--ex)}
-.ctitle{font-size:0.89rem;font-weight:600;line-height:1.35;color:var(--ink)}
-.pb{display:inline-block;font-size:0.54rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:1px 5px;border-radius:4px;margin-left:5px;vertical-align:middle}
-.b3{background:#fff3cd;color:#7a5c00}.b1{background:#ebebeb;color:#555}.br{background:var(--revl);color:var(--rev)}
-.dring{width:28px;height:28px;flex-shrink:0;border-radius:50%;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:.85rem;background:#fff;transition:all .2s;margin-top:1px}
-.dring.done{background:var(--rev);border-color:var(--rev);color:#fff}
+.hdr-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+.hdr-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem; font-weight: 900;
+  color: #fff; line-height: 1.1;
+}
+.hdr-sub { font-size: 0.62rem; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.hdr-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.45rem; font-weight: 500;
+  color: #6ddc9a; line-height: 1;
+}
 
-/* ─── TASKS ─── */
-.tasks{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.task{display:flex;align-items:center;gap:6px;font-size:0.77rem;color:var(--ink2);cursor:pointer;padding:7px 11px;border:1.5px solid var(--bd);border-radius:8px;background:var(--bg);transition:all .15s;user-select:none;-webkit-user-select:none;touch-action:manipulation}
-.task:active{transform:scale(.96)}
-.task.ck{border-color:var(--rev);background:var(--revl);color:var(--rev);font-weight:500}
-.task.ck .box{background:var(--rev);border-color:var(--rev)}
-.task.ck .box::after{display:block}
-.box{width:15px;height:15px;border:1.5px solid #bbb;border-radius:3px;flex-shrink:0;position:relative;background:#fff;transition:all .15s}
-.box::after{display:none;content:'';position:absolute;left:3px;top:0;width:6px;height:10px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(40deg)}
+.hdr-bar-wrap {
+  background: rgba(255,255,255,0.12);
+  border-radius: 99px; height: 5px; overflow: hidden;
+  margin-bottom: 6px;
+}
+.hdr-bar {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, #2a7a4a, #6ddc9a);
+  transition: width 0.5s ease; width: 0%;
+}
+.hdr-count { font-size: 0.62rem; color: rgba(255,255,255,0.45); margin-bottom: 7px; }
 
-/* ─── EXAM BANNER ─── */
-.exbanner{background:linear-gradient(135deg,#e04535,#b83020);color:#fff;border-radius:12px;padding:15px 16px;margin-bottom:8px;box-shadow:0 6px 22px rgba(210,60,40,.28)}
-.exb-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.exb-info .exb-dt{font-family:'DM Mono',monospace;font-size:0.63rem;opacity:.82}
-.exb-info .exb-nm{font-weight:700;font-size:0.97rem;line-height:1.25;margin-top:2px}
-.exb-info .exb-note{font-size:0.73rem;opacity:.88;margin-top:4px}
-.exb-cd{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;background:rgba(255,255,255,.15);border-radius:10px;padding:7px 11px;text-align:center;flex-shrink:0;min-width:56px;line-height:1}
-.exb-cd small{display:block;font-size:.5rem;opacity:.8;font-weight:400;letter-spacing:.6px;margin-top:2px}
+/* exam countdown chips */
+.exam-chips { display: flex; gap: 6px; margin-bottom: 8px; }
+.chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem; font-weight: 500;
+  padding: 3px 9px; border-radius: 99px;
+  white-space: nowrap;
+}
+.chip-p5  { background: rgba(26,92,138,0.35); color: #8cc8e8; border: 1px solid rgba(26,92,138,0.4); }
+.chip-p6  { background: rgba(90,62,140,0.35); color: #c8aaf0; border: 1px solid rgba(90,62,140,0.4); }
 
-/* ─── TOAST & FAB ─── */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:#1a1614;color:#fff;padding:9px 20px;border-radius:99px;font-size:0.77rem;font-weight:500;z-index:9999;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25);white-space:nowrap}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-.fab{position:fixed;bottom:22px;right:16px;width:46px;height:46px;border-radius:50%;background:var(--ink);color:#fff;border:none;font-size:1.1rem;box-shadow:0 4px 16px rgba(0,0,0,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:998;transition:transform .15s}
-.fab:active{transform:scale(.91)}
+/* Tab bar */
+.tab-bar {
+  display: flex; gap: 5px;
+  overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
+  padding-bottom: 2px;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0; padding: 4px 12px;
+  border-radius: 99px;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  background: transparent;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.68rem; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+.tab-btn.act-all  { border-color:#fff; background:rgba(255,255,255,0.14); color:#fff; }
+.tab-btn.act-p5   { border-color:var(--p5-mid); background:rgba(26,92,138,0.3); color:#8cc8e8; }
+.tab-btn.act-p6a  { border-color:var(--p6a-mid); background:rgba(179,88,0,0.3); color:#f4b07a; }
+.tab-btn.act-p6b  { border-color:var(--p6b-mid); background:rgba(90,62,140,0.3); color:#c8aaf0; }
+.tab-btn.act-rev  { border-color:var(--rev-mid); background:rgba(42,122,74,0.3); color:#8cd0aa; }
+
+/* ── CONTENT ── */
+.wrapper { padding: 14px 14px 90px; max-width: 640px; margin: 0 auto; }
+
+.legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+.leg { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--ink-muted); font-weight: 500; }
+.leg-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* Section label */
+.date-section {
+  display: flex; align-items: center; gap: 8px;
+  margin: 20px 0 8px;
+}
+.date-section .ds-line { flex: 1; height: 1px; background: var(--border); }
+.date-section .ds-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.67rem; font-weight: 500;
+  color: var(--ink-muted); white-space: nowrap;
+  background: var(--bg); padding: 0 4px;
+}
+
+/* Row card */
+.row-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-left: 4px solid transparent;
+  border-radius: 11px;
+  padding: 12px 14px; margin-bottom: 9px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  transition: opacity 0.25s;
+}
+.row-card.p5  { border-left-color: var(--p5); }
+.row-card.p6a { border-left-color: var(--p6a); }
+.row-card.p6b { border-left-color: var(--p6b); }
+.row-card.rev { border-left-color: var(--rev); background: #f5fdf8; }
+.row-card.done { opacity: 0.42; }
+
+.row-top { display: flex; align-items: flex-start; gap: 9px; }
+.subj-badge {
+  flex-shrink: 0; margin-top: 1px;
+  font-size: 0.58rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 3px 7px; border-radius: 5px; white-space: nowrap;
+}
+.p5  .subj-badge { background: var(--p5-light);  color: var(--p5); }
+.p6a .subj-badge { background: var(--p6a-light); color: var(--p6a); }
+.p6b .subj-badge { background: var(--p6b-light); color: var(--p6b); }
+.rev .subj-badge { background: var(--rev-light);  color: var(--rev); }
+
+.row-info { flex: 1; }
+.row-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.64rem; color: var(--ink-muted); margin-bottom: 2px;
+}
+.row-title {
+  font-size: 0.88rem; font-weight: 600;
+  color: var(--ink); line-height: 1.35;
+}
+.pri-pill {
+  display: inline-block;
+  font-size: 0.54rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  padding: 1px 5px; border-radius: 4px;
+  margin-left: 5px; vertical-align: middle;
+}
+.pri-3q { background: #fff3cd; color: #7a5c00; }
+.pri-1q { background: #ebebeb; color: #555; }
+.pri-rv { background: var(--rev-light); color: var(--rev); }
+
+/* Tasks */
+.tasks { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.task-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.78rem; color: var(--ink-muted);
+  cursor: pointer; padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px; background: var(--bg);
+  user-select: none; -webkit-user-select: none;
+  touch-action: manipulation; transition: all 0.15s;
+}
+.task-item:active { transform: scale(0.96); }
+.task-item.chk {
+  border-color: var(--check);
+  background: var(--rev-light);
+  color: var(--rev); font-weight: 500;
+}
+.task-item.chk .cb { background: var(--check); border-color: var(--check); }
+.task-item.chk .cb::after { display: block; }
+.cb {
+  width: 15px; height: 15px;
+  border: 1.5px solid #bbb; border-radius: 3px;
+  flex-shrink: 0; background: #fff;
+  position: relative; transition: all 0.15s;
+}
+.cb::after {
+  display: none; content: '';
+  position: absolute; left: 3px; top: 0;
+  width: 6px; height: 9px;
+  border: 2px solid #fff;
+  border-top: none; border-left: none;
+  transform: rotate(40deg);
+}
+
+/* Exam card */
+.exam-card {
+  background: linear-gradient(135deg, #d94030 0%, #a82e22 100%);
+  color: #fff; border-radius: 11px;
+  padding: 15px 16px; margin-bottom: 9px;
+  box-shadow: 0 4px 18px rgba(217,64,48,0.35);
+}
+.ex-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; opacity: 0.8; }
+.ex-title { font-weight: 700; font-size: 1rem; margin-top: 3px; }
+.ex-sub   { font-size: 0.74rem; opacity: 0.85; margin-top: 4px; }
+
+/* Revision divider */
+.rev-divider {
+  display: flex; align-items: center; gap: 7px;
+  margin: 4px 0 8px; opacity: 0.75;
+  font-size: 0.7rem; color: var(--rev); font-weight: 600;
+}
+.rev-divider .rl { flex: 1; height: 1px; background: var(--rev-mid); }
+
+/* Today marker */
+.today-mark {
+  display: flex; align-items: center; gap: 6px; margin: 10px 0;
+}
+.today-mark .tl { flex: 1; height: 2px; background: var(--exam-red); border-radius: 1px; }
+.today-pill {
+  background: var(--exam-red); color: #fff;
+  font-size: 0.62rem; font-weight: 700;
+  padding: 2px 10px; border-radius: 99px; white-space: nowrap;
+}
+
+/* FAB */
+.fab {
+  position: fixed; bottom: 22px; right: 16px;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--ink); color: #fff;
+  border: none; font-size: 1.2rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+  cursor: pointer; z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s;
+}
+.fab:active { transform: scale(0.9); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 80px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: #fff;
+  padding: 7px 16px; border-radius: 99px;
+  font-size: 0.75rem; font-weight: 500;
+  opacity: 0; pointer-events: none; z-index: 998;
+  transition: opacity 0.25s, transform 0.25s;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<div id="stickyHead">
-  <div class="ht">
+<!-- FIXED HEADER -->
+<div class="fixed-header">
+  <div class="hdr-top">
     <div>
-      <div class="ht-title">CA Inter Group 2 — May 2026</div>
-      <div class="ht-sub">P5 Auditing &nbsp;·&nbsp; P6A Financial Mgmt &nbsp;·&nbsp; P6B Strategic Mgmt</div>
+      <div class="hdr-title">CA Inter Group 2 — May 2026</div>
+      <div class="hdr-sub">P5 Auditing &nbsp;·&nbsp; P6A Financial Mgmt &nbsp;·&nbsp; P6B Strategic Mgmt</div>
     </div>
-    <div class="epills">
-      <div class="ep">P5<b id="p5d">—</b>days</div>
-      <div class="ep">P6<b id="p6d">—</b>days</div>
-    </div>
+    <div class="hdr-pct" id="hdrPct">0%</div>
   </div>
-  <div class="pr">
-    <div class="pt"><div class="pf" id="pf" style="width:0%"></div></div>
-    <span class="pp" id="pp">0%</span>
-    <span class="pc" id="pc">0/0</span>
+  <div class="hdr-bar-wrap"><div class="hdr-bar" id="hdrBar"></div></div>
+  <div class="hdr-count" id="hdrCount">0 / 0 tasks completed</div>
+  <div class="exam-chips">
+    <div class="chip chip-p5">P5 Exam: 11 May &nbsp;·&nbsp; <span id="p5days">-</span> days left</div>
+    <div class="chip chip-p6">P6 Exam: 13 May &nbsp;·&nbsp; <span id="p6days">-</span> days left</div>
   </div>
-  <div class="tabs">
-    <button class="tab on-all" onclick="setF('all',this)">All</button>
-    <button class="tab" onclick="setF('p5',this)">P5 Auditing</button>
-    <button class="tab" onclick="setF('p6a',this)">P6A FM</button>
-    <button class="tab" onclick="setF('p6b',this)">P6B SM</button>
-    <button class="tab" onclick="setF('rev',this)">Revision</button>
+  <div class="tab-bar">
+    <button class="tab-btn act-all" onclick="filterBy('all',this)">All Days</button>
+    <button class="tab-btn" onclick="filterBy('p5',this)">P5 Audit</button>
+    <button class="tab-btn" onclick="filterBy('p6a',this)">P6A FM</button>
+    <button class="tab-btn" onclick="filterBy('p6b',this)">P6B SM</button>
+    <button class="tab-btn" onclick="filterBy('rev',this)">Revision</button>
   </div>
 </div>
 
-<div class="wrap" id="mw">
-  <div class="stats" id="stats"></div>
+<div class="wrapper">
   <div class="legend">
-    <div class="leg"><div class="ld" style="background:var(--p5)"></div>P5 Auditing</div>
-    <div class="leg"><div class="ld" style="background:var(--p6a)"></div>P6A FM</div>
-    <div class="leg"><div class="ld" style="background:var(--p6b)"></div>P6B SM</div>
-    <div class="leg"><div class="ld" style="background:var(--rev)"></div>Revision</div>
-    <div class="leg"><div class="ld" style="background:var(--ex)"></div>Exam</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--p5)"></div>P5 Auditing</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--p6a)"></div>P6A FM</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--p6b)"></div>P6B SM</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--rev)"></div>Revision Day</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--exam-red)"></div>Exam Day</div>
   </div>
-  <div id="tt"></div>
+  <div id="timetable"></div>
 </div>
 
-<noscript><div class="wrap"><div class="card"><div class="ctitle" style="color:#d84030;">JavaScript is required to render the timetable. Please enable JS and reload.</div></div></div></noscript>
-
-<button class="fab" onclick="goToday()">📍</button>
+<button class="fab" onclick="jumpToday()" title="Go to Today">📍</button>
 <div class="toast" id="toast"></div>
 
 <script>
-const S=[
-  {phase:"Interleaved Study — P5, P6A & P6B",pc:"ink",pt:"01 Apr – 27 Apr"},
-  {date:"01 Apr",type:"p5",pri:"3/4",sub:"P5 Auditing",title:"NOS of Audit",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"02 Apr",type:"p6b",pri:"3/4",sub:"P6B Strategic Management",title:"Introduction to Strategic Management",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"03 Apr",type:"p5",pri:"3/4",sub:"P5 Auditing",title:"Ethics, Terms of Engagement & Quality Control",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"04 Apr",type:"p6a",pri:"3/4",sub:"P6A Financial Management",title:"Cost of Capital (Full on YT)",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"05 Apr",type:"p5",pri:"3/4",sub:"P5 Auditing",title:"Audit Report (SA 700, 701, 705, 710, 299 & CARO 2020)",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"06 Apr",type:"p6b",pri:"3/4",sub:"P6B Strategic Management",title:"Strategic Analysis — External",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"07 Apr",type:"p5",pri:"3/4",sub:"P5 Auditing",title:"Completion & Review (SA 260, 265, 450, 560, 570 & 580)",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {div:true,label:"🔄 Cumulative Revision 1"},
-  {date:"08 Apr",type:"rev",pri:"rev",sub:"Revision Day",title:"Cumulative Revision: P5 Ch 1–4 · P6B Ch 1–2 · P6A Ch 1",tasks:["Read Short Notes","Solve Practice Questions","Mark Weak Areas"]},
-  {date:"09 Apr",type:"p6a",pri:"3/4",sub:"P6A Financial Management",title:"Leverages",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"10 Apr",type:"p5",pri:"3/4",sub:"P5 Auditing",title:"Documentation",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"11 Apr",type:"p6b",pri:"3/4",sub:"P6B Strategic Management",title:"Strategic Analysis — Internal",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"12 Apr",type:"p5",pri:"3/4",sub:"P5 Auditing",title:"Audit Evidence (Remaining Topics)",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"13 Apr",type:"p6a",pri:"3/4",sub:"P6A Financial Management",title:"Capital Structure",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"14 Apr",type:"p5",pri:"3/4",sub:"P5 Auditing",title:"Audit Strategy",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {div:true,label:"🔄 Cumulative Revision 2"},
-  {date:"15 Apr",type:"rev",pri:"rev",sub:"Revision Day",title:"Cumulative Revision: P5 Ch 5–7 · P6B Ch 3 · P6A Ch 2–3",tasks:["Read Short Notes","Solve Practice Questions","Mark Weak Areas"]},
-  {date:"16 Apr",type:"p6b",pri:"3/4",sub:"P6B Strategic Management",title:"Strategic Choices (Full on YT)",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"17 Apr",type:"p5",pri:"3/4",sub:"P5 Auditing",title:"Bank Audit",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"18 Apr",type:"p6a",pri:"3/4",sub:"P6A Financial Management",title:"Investment Decisions",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"19 Apr",type:"p5",pri:"3/4",sub:"P5 Auditing",title:"Audit of Items of Financial Statements",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"20 Apr",type:"p6a",pri:"3/4",sub:"P6A Financial Management",title:"Ratio Analysis",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {div:true,label:"🔄 Cumulative Revision 3"},
-  {date:"21 Apr",type:"rev",pri:"rev",sub:"Revision Day",title:"Cumulative Revision: P5 Ch 8–9 · P6B Ch 4 · P6A Ch 4–5",tasks:["Read Short Notes","Solve Practice Questions","Mark Weak Areas"]},
-  {phase:"1/4 Priority Chapters",pc:"ink3",pt:"22 Apr – 26 Apr"},
-  {date:"22 Apr",type:"p5",pri:"1/4",sub:"P5 Auditing",title:"Different Types of Entities (excl. Societies & LLPs)  +  Risk Assessment & Internal Control",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"23 Apr",type:"p6b",pri:"1/4",sub:"P6B Strategic Management",title:"Strategic Implementation & Evaluation",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"24 Apr",type:"p6a",pri:"1/4",sub:"P6A Financial Management",title:"Time Value of Money  +  Working Capital Management",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"25 Apr",type:"p5",pri:"1/4",sub:"P5 Auditing",title:"Audit Evidence — SA 530 & SA 520 only",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {date:"26 Apr",type:"p6a",pri:"1/4",sub:"P6A Financial Management",title:"Dividend Decisions  +  Types of Financing  +  Scope & Objective of FM",tasks:["Listen to Class","Write Short Notes","Revise Notes"]},
-  {div:true,label:"🔄 Cumulative Revision 4 — All 1/4 Chapters"},
-  {date:"27 Apr",type:"rev",pri:"rev",sub:"Revision Day",title:"Revision: All 1/4 Chapters across P5 · P6A · P6B",tasks:["Read Short Notes","Solve Practice Questions","Mark Weak Areas"]},
-  {phase:"Grand Revision & Exam Prep",pc:"rev",pt:"28 Apr – 12 May"},
-  {date:"28 Apr",type:"rev",pri:"rev",sub:"P5 Auditing — Grand Revision",title:"P5 Round 2: Ch 1–5 (NOS · Ethics · Audit Report · Completion · Documentation)",tasks:["Read Short Notes","Solve Practice Questions","Mark Weak Areas"]},
-  {date:"29 Apr",type:"rev",pri:"rev",sub:"P5 Auditing — Grand Revision",title:"P5 Round 2: Ch 6–9 + All 1/4 Chapters",tasks:["Read Short Notes","Solve Practice Questions","Mark Weak Areas"]},
-  {date:"30 Apr",type:"rev",pri:"rev",sub:"P6B Strategic Management — Grand Revision",title:"P6B Round 2: All Chapters + Strategy Frameworks & Diagrams",tasks:["Read Short Notes","Solve Practice Questions","Mark Weak Areas"]},
-  {date:"01 May",type:"rev",pri:"rev",sub:"P6A Financial Management — Grand Revision",title:"P6A Round 2: All Chapters + Formula Sheet Review",tasks:["Read Short Notes","Solve Practice Questions","Mark Weak Areas"]},
-  {date:"02 May",type:"rev",pri:"rev",sub:"P5 Auditing — Targeted Revision",title:"P5 Targeted: Weak Areas · SA Numbers · CARO 2020",tasks:["Read Short Notes","Solve Practice Questions","Mark Weak Areas"]},
-  {date:"03 May",type:"rev",pri:"rev",sub:"P6A + P6B — Targeted Revision",title:"P6A + P6B Targeted: Weak Areas · Key Formulas · Strategic Frameworks",tasks:["Read Short Notes","Solve Practice Questions","Mark Weak Areas"]},
-  {date:"04 May",type:"rev",pri:"rev",sub:"P5 Auditing — Mock Practice",title:"P5 Mock Test / Previous Year Questions Full Practice",tasks:["Attempt Mock Paper","Self-Evaluate Answers","Note Gaps for Final Revision"]},
-  {date:"05 May",type:"rev",pri:"rev",sub:"P6A + P6B — Mock Practice",title:"P6A + P6B Mock Test / Previous Year Questions Full Practice",tasks:["Attempt Mock Paper","Self-Evaluate Answers","Note Gaps for Final Revision"]},
-  {date:"06 May",type:"rev",pri:"rev",sub:"P5 Auditing — Final Revision",title:"P5 Final: Short Notes Quick Scan + All SA Numbers Drill",tasks:["Skim All Short Notes","Review All SA Numbers","Revise CARO 2020"]},
-  {date:"07 May",type:"rev",pri:"rev",sub:"P6A + P6B — Final Revision",title:"P6A + P6B Final: Formula Quick-Fire + Framework Recall",tasks:["Read P6A Short Notes","Read P6B Short Notes","Key Formulas & Frameworks"]},
-  {date:"08 May",type:"rev",pri:"rev",sub:"P5 Auditing — Pre-Exam",title:"P5 Pre-Exam: Light glance at notes only. Rest well tonight 🙏",tasks:["Skim Weak Area Notes","Light Read Only","Sleep Early ✅"]},
-  {date:"09 May",type:"rev",pri:"rev",sub:"P5 Auditing — Exam Eve",title:"P5 Exam Eve: Keep it very light. Confidence > Cramming 💪",tasks:["Quick Notes Glance","Pack Exam Essentials","Early Dinner & Rest ✅"]},
-  {exam:true,date:"10 May",label:"P5 Auditing — EXAM DAY",note:"You're ready. Stay calm, read every question carefully, write well!"},
-  {date:"11 May",type:"rev",pri:"rev",sub:"P6A + P6B — Exam Eve",title:"P6A + P6B Exam Eve: Short Notes + Formula Sheet. Rest well 🙏",tasks:["Read P6A Short Notes","Read P6B Short Notes","Sleep Early ✅"]},
-  {exam:true,date:"12 May",label:"P6A Financial Mgmt & P6B Strategic Mgmt — EXAM DAY",note:"You've prepared brilliantly. Go give your absolute best! 🎯"},
+// ─── SCHEDULE (Starting 13 Apr, Exams: P5=11 May, P6=13 May) ───
+const SCHED = [
+
+  // ── WEEK 1 : 13 Apr – 17 Apr ──
+  { section: "Week 1 — 13 Apr to 17 Apr" },
+  { date:"13 Apr", type:"p5",  priority:"3/4", subj:"P5 Auditing",       title:"NOS of Audit",                                               tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"14 Apr", type:"p6b", priority:"3/4", subj:"P6B Strategic Mgmt",title:"Introduction to Strategic Management",                        tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"15 Apr", type:"p5",  priority:"3/4", subj:"P5 Auditing",       title:"Ethics, Terms of Engagement & Quality Control",              tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"16 Apr", type:"p6a", priority:"3/4", subj:"P6A Financial Mgmt",title:"Cost of Capital (Full on YT)",                               tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"17 Apr", type:"p5",  priority:"3/4", subj:"P5 Auditing",       title:"Audit Report (SA 700, 701, 705, 710, 299 & CARO 2020)",      tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+
+  // ── WEEK 2 : 18 Apr – 22 Apr ──
+  { section: "Week 2 — 18 Apr to 22 Apr" },
+  { date:"18 Apr", type:"p6b", priority:"3/4", subj:"P6B Strategic Mgmt",title:"Strategic Analysis — External",                              tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"19 Apr", type:"p5",  priority:"3/4", subj:"P5 Auditing",       title:"Completion & Review (SA 260, 265, 450, 560, 570 & 580)",     tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"20 Apr", type:"p6a", priority:"3/4", subj:"P6A Financial Mgmt",title:"Leverages",                                                   tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"21 Apr", type:"p5",  priority:"3/4", subj:"P5 Auditing",       title:"Documentation",                                              tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+
+  { divider:"🔄 Cumulative Revision 1 — P5 Ch 1–4 · P6B Ch 1–2 · P6A Ch 1–2" },
+  { date:"22 Apr", type:"rev", priority:"rev", subj:"Cumulative Revision",
+    title:"P5: NOS, Ethics, Audit Report, Completion  |  P6B: Introduction, External Analysis  |  P6A: Cost of Capital, Leverages",
+    tasks:["Revise P5 Short Notes","Revise P6B Short Notes","Revise P6A Short Notes","Mark Weak Areas"] },
+
+  // ── WEEK 3 : 23 Apr – 27 Apr ──
+  { section: "Week 3 — 23 Apr to 27 Apr" },
+  { date:"23 Apr", type:"p6b", priority:"3/4", subj:"P6B Strategic Mgmt",title:"Strategic Analysis — Internal",                              tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"24 Apr", type:"p5",  priority:"3/4", subj:"P5 Auditing",       title:"Audit Evidence (Remaining Topics)",                          tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"25 Apr", type:"p6a", priority:"3/4", subj:"P6A Financial Mgmt",title:"Capital Structure",                                          tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"26 Apr", type:"p5",  priority:"3/4", subj:"P5 Auditing",       title:"Audit Strategy",                                             tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"27 Apr", type:"p6b", priority:"3/4", subj:"P6B Strategic Mgmt",title:"Strategic Choices (Full on YT)",                             tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+
+  // ── WEEK 4 : 28 Apr – 02 May ──
+  { section: "Week 4 — 28 Apr to 02 May" },
+  { date:"28 Apr", type:"p5",  priority:"3/4", subj:"P5 Auditing",       title:"Bank Audit",                                                 tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"29 Apr", type:"p6a", priority:"3/4", subj:"P6A Financial Mgmt",title:"Investment Decisions",                                       tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"30 Apr", type:"p5",  priority:"3/4", subj:"P5 Auditing",       title:"Audit of Items of Financial Statements",                     tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+
+  { divider:"🔄 Cumulative Revision 2 — P5 Ch 5–9 · P6B Ch 3–4 · P6A Ch 3–5" },
+  { date:"01 May", type:"rev", priority:"rev", subj:"Cumulative Revision",
+    title:"P5: Documentation, Audit Evidence, Strategy, Bank Audit, AFS  |  P6B: Internal Analysis, Strategic Choices  |  P6A: Capital Structure, Investment Decisions",
+    tasks:["Revise P5 Short Notes","Revise P6A Short Notes","Revise P6B Short Notes","Mark Weak Areas"] },
+
+  { date:"02 May", type:"p6a", priority:"3/4", subj:"P6A Financial Mgmt",title:"Ratio Analysis",                                             tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+
+  // ── 1/4 PRIORITY CHAPTERS : 03 May – 05 May ──
+  { section: "1/4 Priority Chapters — 03 May to 05 May" },
+  { date:"03 May", type:"p5",  priority:"1/4", subj:"P5 Auditing",
+    title:"Different Types of Entities (excl. Societies & LLPs)  +  Risk Assessment & Internal Control  +  Audit Evidence (SA 530 & SA 520)",
+    tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"04 May", type:"p6a", priority:"1/4", subj:"P6A Financial Mgmt",
+    title:"Time Value of Money  +  Working Capital Management",
+    tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+  { date:"05 May", type:"p6a", priority:"1/4", subj:"P6A Financial Mgmt",
+    title:"Dividend Decisions  +  Types of Financing  +  Scope & Objective of FM",
+    tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+
+  { divider:"🔄 Cumulative Revision 3 — P6B 1/4 + All 1/4 Chapters" },
+  { date:"05 May", type:"p6b", priority:"1/4", subj:"P6B Strategic Mgmt",
+    title:"Strategic Implementation & Evaluation",
+    tasks:["Listen to Class","Write Short Notes","Revise Notes"] },
+
+  // ── GRAND REVISION : 06 May – 10 May ──
+  { section: "Grand Revision — 06 May to 10 May" },
+  { date:"06 May", type:"rev", priority:"rev", subj:"All 1/4 Chapters — Revision",
+    title:"Quick Revision of ALL 1/4 Chapters across P5, P6A & P6B",
+    tasks:["Revise P5 1/4 Topics","Revise P6A 1/4 Topics","Revise P6B 1/4 Topic"] },
+  { date:"07 May", type:"rev", priority:"rev", subj:"Grand Revision — P5",
+    title:"P5 Full Grand Revision: All 9 Chapters + Standards on Auditing (SAs) + CARO 2020",
+    tasks:["Revise All P5 Short Notes","Scan All SA Standards","Revise CARO 2020","Mark Weak Areas"] },
+  { date:"08 May", type:"rev", priority:"rev", subj:"Grand Revision — P6A & P6B",
+    title:"P6A + P6B Full Grand Revision: All Chapters + Formula Sheet + Framework Diagrams",
+    tasks:["Revise All P6A Short Notes","Revise All P6B Short Notes","Formula Quick-Fire","Mark Weak Areas"] },
+  { date:"09 May", type:"rev", priority:"rev", subj:"Mock Test — P5 Auditing",
+    title:"P5 Mock Test / Previous Year Question Paper Practice",
+    tasks:["Attempt Full Mock Paper","Self-Evaluate Answers","List Gaps & Weak Areas"] },
+  { date:"10 May", type:"rev", priority:"rev", subj:"P5 Auditing — Exam Eve",
+    title:"P5 Final Day: Light skim of all Short Notes. Pack stationery & hall ticket. Sleep by 10 PM.",
+    tasks:["Skim All Short Notes","Pack Stationery & Hall Ticket","Sleep Early 🌙"] },
+
+  // ── EXAM ──
+  { exam:true, date:"11 May", title:"P5 Auditing — EXAM DAY 🎯", sub:"Stay calm, read every question carefully, manage your time well. You've prepared well!" },
+
+  { date:"12 May", type:"rev", priority:"rev", subj:"P6A & P6B — Exam Eve",
+    title:"P6A + P6B Final Day: Quick skim of Short Notes + Formula Sheet + Mock gaps. Relax after P5 exam.",
+    tasks:["Skim P6A Short Notes","Skim P6B Short Notes","Review Key Formulas & Frameworks","Sleep Early 🌙"] },
+
+  // ── EXAM ──
+  { exam:true, date:"13 May", title:"P6A Financial Mgmt & P6B Strategic Mgmt — EXAM DAY 🎯", sub:"Two papers, one day — pace yourself smartly. Best of luck! 🌟" },
 ];
 
-const KEY='ca_g2_v3';
-let ck={},filter='all';
-function load(){try{const s=localStorage.getItem(KEY);if(s)ck=JSON.parse(s)}catch(e){ck={}}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(ck))}catch(e){}}
-function k(d,i){return d.replace(/ /g,'_')+'_'+i}
-function toggle(key){ck[key]=!ck[key];save();render();showT(ck[key]?'✅ Task done!':'↩️ Unmarked')}
-function showT(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1600)}
-function setF(f,btn){
-  filter=f;
-  document.querySelectorAll('.tab').forEach(b=>{b.className='tab'});
-  btn.classList.add('on-'+f);
+// ─── STATE ───
+const STORE_KEY = 'ca_inter_g2_v3';
+let checked = {};
+let filter  = 'all';
+
+function load() {
+  try { const s = localStorage.getItem(STORE_KEY); if (s) checked = JSON.parse(s); } catch(e){}
+}
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(checked)); } catch(e){}
+}
+function k(date, i) { return `${date.replace(/ /g,'_')}_${i}`; }
+
+function toggle(key) {
+  checked[key] = !checked[key];
+  save(); render();
+  showToast(checked[key] ? '✅ Task done!' : '↩️ Unmarked');
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1600);
+}
+
+function updateProgress() {
+  let total = 0, done = 0;
+  SCHED.forEach(r => {
+    if (!r.tasks) return;
+    r.tasks.forEach((_,i) => { total++; if (checked[k(r.date,i)]) done++; });
+  });
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('hdrBar').style.width   = pct + '%';
+  document.getElementById('hdrPct').textContent   = pct + '%';
+  document.getElementById('hdrCount').textContent = `${done} / ${total} tasks completed`;
+}
+
+function updateCountdowns() {
+  const now   = new Date(); now.setHours(0,0,0,0);
+  const p5d   = Math.ceil((new Date(2026,4,11) - now)/(86400000));
+  const p6d   = Math.ceil((new Date(2026,4,13) - now)/(86400000));
+  document.getElementById('p5days').textContent = p5d > 0 ? p5d : '🎯 TODAY';
+  document.getElementById('p6days').textContent = p6d > 0 ? p6d : '🎯 TODAY';
+}
+
+function parseDate(d) {
+  const m = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  const [day,mon] = d.split(' ');
+  return new Date(2026, m[mon], +day);
+}
+
+function filterBy(f, btn) {
+  filter = f;
+  document.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn');
+  btn.classList.add('act-' + f);
   render();
 }
-function pd(d){const M={Jan:0,Feb:1,Mar:2,Apr:3,May:4};const[day,mon]=d.split(' ');return new Date(2026,M[mon],parseInt(day))}
-function du(d){const n=new Date();n.setHours(0,0,0,0);return Math.ceil((d-n)/(864e5))}
-function updCD(){
-  const p5=du(new Date(2026,4,10)),p6=du(new Date(2026,4,12));
-  document.getElementById('p5d').textContent=p5>0?p5:'🎯';
-  document.getElementById('p6d').textContent=p6>0?p6:'🎯';
-}
-function fixPad(){const h=document.getElementById('stickyHead').offsetHeight;document.getElementById('mw').style.paddingTop=(h+10)+'px'}
-function goToday(){const el=document.getElementById('ta');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});else showT('No upcoming date!')}
 
-function renderStats(){
-  const c={p5:{t:0,d:0},p6a:{t:0,d:0},p6b:{t:0,d:0},rev:{t:0,d:0}};
-  S.forEach(item=>{if(!item.tasks)return;const t=item.type;if(!c[t])return;item.tasks.forEach((_,i)=>{c[t].t++;if(ck[k(item.date,i)])c[t].d++;})});
-  const L={p5:'P5 Audit',p6a:'P6A FM',p6b:'P6B SM',rev:'Revision'};
-  const C={p5:'cp5',p6a:'cp6a',p6b:'cp6b',rev:'crev'};
-  document.getElementById('stats').innerHTML=Object.keys(c).map(x=>`<div class="sb"><div class="sn ${C[x]}">${c[x].d}<span style="font-size:.6rem;opacity:.55">/${c[x].t}</span></div><div class="sl">${L[x]}</div></div>`).join('');
+function jumpToday() {
+  const el = document.getElementById('today-anchor');
+  if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+  else showToast('🎉 All past days completed!');
 }
 
-function render(){
-  const today=new Date();today.setHours(0,0,0,0);
-  let html='',tdone=false,total=0,done=0;
+function pBadge(p) {
+  if (p==='3/4') return `<span class="pri-pill pri-3q">3/4 Priority</span>`;
+  if (p==='1/4') return `<span class="pri-pill pri-1q">1/4 Priority</span>`;
+  return `<span class="pri-pill pri-rv">Revision</span>`;
+}
 
-  S.forEach(item=>{
-    if(item.tasks){item.tasks.forEach((_,i)=>{total++;if(ck[k(item.date,i)])done++;})}
+function render() {
+  const wrap = document.getElementById('timetable');
+  const today = new Date(); today.setHours(0,0,0,0);
+  let html = '', todayDone = false;
 
-    if(item.phase){
-      if(filter==='all'||filter==='rev'){
-        const col=item.pc==='rev'?'var(--rev)':item.pc==='ink3'?'var(--ink3)':'var(--ink)';
-        html+=`<div class="phd" style="color:${col}"><div class="bar"></div><span>${item.phase}</span><span class="ptag">${item.pt}</span><div class="bar"></div></div>`;
-      }
-      return;
-    }
-    if(item.div){if(filter==='all'||filter==='rev')html+=`<div class="rdiv"><div class="dl"></div>${item.label}<div class="dl"></div></div>`;return;}
-    if(item.exam){
-      if(filter==='all'||filter==='rev'){
-        const d=du(pd(item.date));
-        html+=`<div class="exbanner"><div class="exb-top"><div class="exb-info"><div class="exb-dt">${item.date}, 2026</div><div class="exb-nm">${item.label}</div><div class="exb-note">${item.note}</div></div><div class="exb-cd">${d>0?d:'🎯'}<small>${d>0?'DAYS LEFT':'TODAY'}</small></div></div></div>`;
+  // track last date to avoid duplicate today markers (05 May has 2 entries)
+  let lastTodayDate = '';
+
+  SCHED.forEach(row => {
+
+    if (row.section) {
+      if (filter === 'all' || filter === 'rev') {
+        html += `<div class="date-section"><div class="ds-line"></div><span class="ds-label">${row.section}</span><div class="ds-line"></div></div>`;
       }
       return;
     }
 
-    if(filter!=='all'&&item.type!==filter)return;
+    if (row.divider) {
+      if (filter === 'all' || filter === 'rev') {
+        html += `<div class="rev-divider"><div class="rl"></div>${row.divider}<div class="rl"></div></div>`;
+      }
+      return;
+    }
 
-    const iD=pd(item.date);
-    if(!tdone&&iD>=today){html+=`<div class="tday" id="ta"><div class="tl"></div><div class="tp">📍 TODAY — ${today.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</div><div class="tl"></div></div>`;tdone=true;}
+    if (row.exam) {
+      if (filter === 'all' || filter === 'rev') {
+        html += `<div class="exam-card">
+          <div class="ex-date">${row.date}, 2026</div>
+          <div class="ex-title">${row.title}</div>
+          <div class="ex-sub">${row.sub}</div>
+        </div>`;
+      }
+      return;
+    }
 
-    const ad=item.tasks&&item.tasks.every((_,i)=>ck[k(item.date,i)]);
-    const isT=iD.getTime()===today.getTime();
-    const pb=item.pri==='3/4'?`<span class="pb b3">3/4</span>`:item.pri==='1/4'?`<span class="pb b1">1/4</span>`:`<span class="pb br">Rev</span>`;
-    const th=item.tasks.map((t,i)=>{const key=k(item.date,i);const c=!!ck[key];return`<div class="task${c?' ck':''}" onclick="toggle('${key}')"><div class="box"></div><span>${t}</span></div>`}).join('');
+    if (filter !== 'all' && row.type !== filter) return;
 
-    html+=`<div class="card ${item.type}${ad?' adone':''}${isT?' tcard':''}">
-      <div class="ctop">
-        <span class="dchip">${item.date}</span>
-        <div class="ci"><div class="csub">${item.sub}</div><div class="ctitle">${item.title}${pb}</div></div>
-        <div class="dring${ad?' done':''}">${ad?'✓':'○'}</div>
+    // Today marker (only once, and only once per date)
+    const rDate = parseDate(row.date);
+    if (!todayDone && rDate >= today && lastTodayDate !== row.date) {
+      html += `<div class="today-mark" id="today-anchor">
+        <div class="tl"></div>
+        <div class="today-pill">📍 TODAY — ${today.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</div>
+        <div class="tl"></div>
+      </div>`;
+      todayDone = true;
+    }
+    lastTodayDate = row.date;
+
+    const allDone = row.tasks.every((_,i) => checked[k(row.date,i)]);
+    const tasks = row.tasks.map((t,i) => {
+      const key = k(row.date, i);
+      const c = !!checked[key];
+      return `<div class="task-item ${c?'chk':''}" onclick="toggle('${key}')">
+        <div class="cb"></div><span>${t}</span>
+      </div>`;
+    }).join('');
+
+    html += `<div class="row-card ${row.type} ${allDone?'done':''}">
+      <div class="row-top">
+        <span class="subj-badge">${row.subj}</span>
+        <div class="row-info">
+          <div class="row-date">${row.date}, 2026</div>
+          <div class="row-title">${row.title} ${pBadge(row.priority)}</div>
+        </div>
       </div>
-      <div class="tasks">${th}</div>
+      <div class="tasks">${tasks}</div>
     </div>`;
   });
 
-  document.getElementById('tt').innerHTML=html;
-  const pct=total?Math.round(done/total*100):0;
-  document.getElementById('pf').style.width=pct+'%';
-  document.getElementById('pp').textContent=pct+'%';
-  document.getElementById('pc').textContent=`${done}/${total}`;
-  renderStats();fixPad();
+  wrap.innerHTML = html;
+  updateProgress();
 }
 
-load();render();updCD();
-if(!document.getElementById('tt').innerHTML.trim()){
-  document.getElementById('tt').innerHTML='<div class="card"><div class="ctitle" style="color:#d84030;">Unable to render timetable. Please reload the page.</div></div>';
-}
-setInterval(updCD,60000);
-setTimeout(goToday,500);
-window.addEventListener('resize',fixPad);
+load();
+updateCountdowns();
+render();
+setTimeout(jumpToday, 350);
 </script>
 </body>
 </html>
