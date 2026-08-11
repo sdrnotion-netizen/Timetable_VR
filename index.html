@@ -123,7 +123,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 /* LOGIN / SYNC STATUS */
 .acct-btn{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:.6rem;font-weight:600;padding:4px 9px;border-radius:99px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
 .acct-btn.editor{background:rgba(109,220,154,.2);border-color:#6ddc9a;color:#6ddc9a;}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1200;align-items:center;justify-content:center;padding:20px;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1600;align-items:center;justify-content:center;padding:20px;}
 .modal-bg.show{display:flex;}
 .modal-box{background:var(--paper);border-radius:14px;padding:20px;width:100%;max-width:320px;box-shadow:0 12px 40px rgba(0,0,0,.3);}
 .modal-title{font-family:'Playfair Display',serif;font-weight:900;font-size:1.05rem;margin-bottom:3px;}
@@ -134,6 +134,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .modal-btn{flex:1;padding:9px;border-radius:8px;border:none;font-weight:600;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .modal-btn.primary{background:var(--ink);color:#fff;}
 .modal-btn.ghost{background:transparent;color:var(--inkm);border:1.5px solid var(--bdr);}
+.role-btn{width:100%;padding:13px;border-radius:10px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:'DM Sans',sans-serif;border:1.5px solid var(--bdr);background:#fff;margin-bottom:9px;display:flex;align-items:center;gap:8px;text-align:left;}
+.role-btn.re{border-color:var(--ink);background:var(--ink);color:#fff;}
+.role-btn .rt{font-weight:700;font-size:.85rem;}
+.role-btn .rs{font-weight:400;font-size:.63rem;opacity:.7;display:block;}
 .sync-overlay{position:fixed;inset:0;background:var(--bg);z-index:1500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;}
 .sync-overlay.hide{display:none;}
 .sync-txt{font-size:.8rem;color:var(--inkm);font-weight:500;}
@@ -184,15 +188,28 @@ body.viewer-mode .ti:active{transform:none;}
 <button class="fab" onclick="goToday()">📍</button>
 <div class="toast" id="toast"></div>
 
+<div class="modal-bg" id="roleModal">
+  <div class="modal-box">
+    <div class="modal-title">Welcome 👋</div>
+    <div class="modal-sub">Are you viewing progress, or updating it?</div>
+    <button class="role-btn re" onclick="chooseEditor()">
+      <div>🔓</div><div><span class="rt">I'm the Editor</span><span class="rs">Log in to update tasks</span></div>
+    </button>
+    <button class="role-btn" onclick="chooseViewer()">
+      <div>👁️</div><div><span class="rt">I'm just Viewing</span><span class="rs">See progress, no login needed</span></div>
+    </button>
+  </div>
+</div>
+
 <div class="modal-bg" id="loginModal">
   <div class="modal-box">
     <div class="modal-title">Editor Login</div>
-    <div class="modal-sub">Only Varshini needs to log in. Dhanush can just close this and view.</div>
+    <div class="modal-sub">Only Varshini needs to log in.</div>
     <input class="modal-input" id="loginEmail" type="email" placeholder="Email" autocomplete="username"/>
     <input class="modal-input" id="loginPass" type="password" placeholder="Password" autocomplete="current-password"/>
     <div class="modal-err" id="loginErr"></div>
     <div class="modal-btns">
-      <button class="modal-btn ghost" onclick="closeLogin()">Cancel</button>
+      <button class="modal-btn ghost" onclick="closeLogin()">Back</button>
       <button class="modal-btn primary" onclick="doLogin()">Log In</button>
     </div>
   </div>
@@ -572,7 +589,7 @@ const fbAuth=firebase.auth();
 const fbDb=firebase.database();
 const progRef=fbDb.ref('progress');
 
-let ck={},cf='all',isEditor=false,firstLoad=true;
+let ck={},cf='all',isEditor=false,firstLoad=true,authChecked=false,roleChosen=false;
 
 function tk(d,si,ti){return`${d.replace(/ /g,'_')}_s${si}_t${ti}`;}
 function mrk(d){return`${d.replace(/ /g,'_')}_mr`;}
@@ -599,12 +616,30 @@ progRef.on('value',snap=>{
 // Auth state — flips editor mode on/off automatically
 fbAuth.onAuthStateChanged(user=>{
   isEditor=!!user;
+  authChecked=true;
   const btn=document.getElementById('acctBtn');
-  if(isEditor){btn.textContent='🔓 Editor';btn.classList.add('editor');document.body.classList.remove('viewer-mode');}
-  else{btn.textContent='👁️ Viewer';btn.classList.remove('editor');document.body.classList.add('viewer-mode');}
+  if(isEditor){
+    btn.textContent='🔓 Editor';btn.classList.add('editor');document.body.classList.remove('viewer-mode');
+    document.getElementById('roleModal').classList.remove('show');
+    document.getElementById('loginModal').classList.remove('show');
+    roleChosen=true;
+  }else{
+    btn.textContent='👁️ Viewer';btn.classList.remove('editor');document.body.classList.add('viewer-mode');
+    if(!roleChosen)document.getElementById('roleModal').classList.add('show');
+  }
   render();
 });
 
+function chooseEditor(){
+  document.getElementById('roleModal').classList.remove('show');
+  document.getElementById('loginModal').classList.add('show');
+  document.getElementById('loginErr').textContent='';
+}
+function chooseViewer(){
+  roleChosen=true;
+  document.getElementById('roleModal').classList.remove('show');
+  toast('👁️ Viewing in read-only mode');
+}
 function acctClick(){
   if(isEditor){
     if(confirm('Log out of editor mode?'))fbAuth.signOut();
@@ -613,7 +648,10 @@ function acctClick(){
     document.getElementById('loginErr').textContent='';
   }
 }
-function closeLogin(){document.getElementById('loginModal').classList.remove('show');}
+function closeLogin(){
+  document.getElementById('loginModal').classList.remove('show');
+  if(!isEditor && !roleChosen)document.getElementById('roleModal').classList.add('show');
+}
 function doLogin(){
   const email=document.getElementById('loginEmail').value.trim();
   const pass=document.getElementById('loginPass').value;
