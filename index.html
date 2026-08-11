@@ -120,6 +120,25 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .fab:active{transform:scale(.9);}
 .toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(18px);background:var(--ink);color:#fff;padding:6px 15px;border-radius:99px;font-size:.73rem;font-weight:500;opacity:0;pointer-events:none;z-index:998;transition:opacity .25s,transform .25s;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* LOGIN / SYNC STATUS */
+.acct-btn{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:.6rem;font-weight:600;padding:4px 9px;border-radius:99px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.acct-btn.editor{background:rgba(109,220,154,.2);border-color:#6ddc9a;color:#6ddc9a;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1200;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.show{display:flex;}
+.modal-box{background:var(--paper);border-radius:14px;padding:20px;width:100%;max-width:320px;box-shadow:0 12px 40px rgba(0,0,0,.3);}
+.modal-title{font-family:'Playfair Display',serif;font-weight:900;font-size:1.05rem;margin-bottom:3px;}
+.modal-sub{font-size:.68rem;color:var(--inkm);margin-bottom:14px;}
+.modal-input{width:100%;padding:9px 11px;border-radius:8px;border:1.5px solid var(--bdr);font-size:.8rem;margin-bottom:9px;font-family:'DM Sans',sans-serif;background:#fff;}
+.modal-err{font-size:.65rem;color:var(--red);margin-bottom:8px;min-height:14px;}
+.modal-btns{display:flex;gap:8px;margin-top:4px;}
+.modal-btn{flex:1;padding:9px;border-radius:8px;border:none;font-weight:600;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.modal-btn.primary{background:var(--ink);color:#fff;}
+.modal-btn.ghost{background:transparent;color:var(--inkm);border:1.5px solid var(--bdr);}
+.sync-overlay{position:fixed;inset:0;background:var(--bg);z-index:1500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;}
+.sync-overlay.hide{display:none;}
+.sync-txt{font-size:.8rem;color:var(--inkm);font-weight:500;}
+body.viewer-mode .ti{cursor:default;}
+body.viewer-mode .ti:active{transform:none;}
 </style>
 </head>
 <body>
@@ -129,7 +148,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <div class="fh-title">CA Inter Group 2 — Sep 2026</div>
       <div class="fh-sub">P5 Auditing (Theory) · P6A FM (Practical) · P6B SM (Theory)</div>
     </div>
-    <div class="fh-pct" id="hPct">0%</div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+      <div class="fh-pct" id="hPct">0%</div>
+      <button class="acct-btn" id="acctBtn" onclick="acctClick()">👁️ Viewer</button>
+    </div>
   </div>
   <div class="bw"><div class="bar" id="hBar"></div></div>
   <div class="fh-cnt" id="hCnt">0 / 0 tasks completed</div>
@@ -161,6 +183,30 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 
 <button class="fab" onclick="goToday()">📍</button>
 <div class="toast" id="toast"></div>
+
+<div class="modal-bg" id="loginModal">
+  <div class="modal-box">
+    <div class="modal-title">Editor Login</div>
+    <div class="modal-sub">Only Varshini needs to log in. Dhanush can just close this and view.</div>
+    <input class="modal-input" id="loginEmail" type="email" placeholder="Email" autocomplete="username"/>
+    <input class="modal-input" id="loginPass" type="password" placeholder="Password" autocomplete="current-password"/>
+    <div class="modal-err" id="loginErr"></div>
+    <div class="modal-btns">
+      <button class="modal-btn ghost" onclick="closeLogin()">Cancel</button>
+      <button class="modal-btn primary" onclick="doLogin()">Log In</button>
+    </div>
+  </div>
+</div>
+
+<div class="sync-overlay" id="syncOverlay">
+  <div style="font-size:1.6rem;">📡</div>
+  <div class="sync-txt">Connecting to live schedule…</div>
+</div>
+
+<!-- Firebase SDKs (compat build — works directly in plain HTML, no build tools needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <script>
 const S=[
@@ -509,13 +555,75 @@ const S=[
 // ═══════════════════
 //  STATE + LOGIC
 // ═══════════════════
-const SK='ca_g2_sep26_v4';
-let ck={},cf='all';
-function load(){try{const s=localStorage.getItem(SK);if(s)ck=JSON.parse(s);}catch(e){}}
-function save(){try{localStorage.setItem(SK,JSON.stringify(ck));}catch(e){}}
+// ═══════════════════
+//  FIREBASE SETUP
+// ═══════════════════
+const firebaseConfig={
+  apiKey:"AIzaSyB8IvyeXd0w5TU4uLi_hLX47zi_9emIjlg",
+  authDomain:"vr-schedule.firebaseapp.com",
+  databaseURL:"https://vr-schedule-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"vr-schedule",
+  storageBucket:"vr-schedule.firebasestorage.app",
+  messagingSenderId:"815020176920",
+  appId:"1:815020176920:web:22db058dcc40a7acfaf56d"
+};
+firebase.initializeApp(firebaseConfig);
+const fbAuth=firebase.auth();
+const fbDb=firebase.database();
+const progRef=fbDb.ref('progress');
+
+let ck={},cf='all',isEditor=false,firstLoad=true;
+
 function tk(d,si,ti){return`${d.replace(/ /g,'_')}_s${si}_t${ti}`;}
 function mrk(d){return`${d.replace(/ /g,'_')}_mr`;}
-function tog(key){ck[key]=!ck[key];save();render();toast(ck[key]?'✅ Done!':'↩️ Unmarked');}
+
+function tog(key){
+  if(!isEditor){toast('👁️ View-only — log in as editor to update');return;}
+  const newVal=!ck[key];
+  progRef.child(key).set(newVal); // live listener re-renders for everyone
+  toast(newVal?'✅ Done!':'↩️ Unmarked');
+}
+
+// Real-time sync: fires on load AND whenever Varshini (or anyone) updates data
+progRef.on('value',snap=>{
+  ck=snap.val()||{};
+  document.getElementById('syncOverlay').classList.add('hide');
+  render();
+  if(firstLoad){firstLoad=false;setTimeout(goToday,300);}
+},err=>{
+  document.getElementById('syncOverlay').classList.add('hide');
+  toast('⚠️ Connection error — check internet');
+  console.error(err);
+});
+
+// Auth state — flips editor mode on/off automatically
+fbAuth.onAuthStateChanged(user=>{
+  isEditor=!!user;
+  const btn=document.getElementById('acctBtn');
+  if(isEditor){btn.textContent='🔓 Editor';btn.classList.add('editor');document.body.classList.remove('viewer-mode');}
+  else{btn.textContent='👁️ Viewer';btn.classList.remove('editor');document.body.classList.add('viewer-mode');}
+  render();
+});
+
+function acctClick(){
+  if(isEditor){
+    if(confirm('Log out of editor mode?'))fbAuth.signOut();
+  }else{
+    document.getElementById('loginModal').classList.add('show');
+    document.getElementById('loginErr').textContent='';
+  }
+}
+function closeLogin(){document.getElementById('loginModal').classList.remove('show');}
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  const errEl=document.getElementById('loginErr');
+  if(!email||!pass){errEl.textContent='Enter both email and password';return;}
+  errEl.textContent='Logging in…';
+  fbAuth.signInWithEmailAndPassword(email,pass)
+    .then(()=>{closeLogin();toast('🔓 Editor mode on');})
+    .catch(e=>{errEl.textContent='❌ Wrong email or password';});
+}
 function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1500);}
 function updProg(){
   let tot=0,don=0;
@@ -604,7 +712,9 @@ function render(){
   wrap.innerHTML=html;
   updProg();
 }
-load();updCd();render();setTimeout(goToday,400);
+updCd();
+// render() is now triggered by the Firebase progRef.on('value', ...) listener above,
+// which fires immediately with current data and again on every future change.
 </script>
 </body>
 </html>
