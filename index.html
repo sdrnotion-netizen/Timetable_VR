@@ -689,8 +689,12 @@ function tog(key){
   if(mode!=='editor'){toast('👁️ View-only — log in to update your own progress');return;}
   if(activeId!==editorId){toast('👀 Read-only — this is someone else\u2019s board');return;}
   const newVal=!ck[key];
-  fbDb.ref('progress/'+editorId+'/'+key).set(newVal); // live listener re-renders for everyone
-  toast(newVal?'✅ Done!':'↩️ Unmarked');
+  fbDb.ref('progress/'+editorId+'/'+key).set(newVal)
+    .then(()=>{toast(newVal?'✅ Done!':'↩️ Unmarked');})
+    .catch(e=>{
+      console.error('Firebase write failed:',e);
+      toast('❌ Update failed: '+(e.code||e.message||'check rules/login'),true);
+    });
 }
 
 // Permanent listeners for BOTH users — needed for the sidebar leaderboard even when
@@ -849,7 +853,7 @@ function peekUser(userId){
 buildRoleButtons();
 buildViewerPickButtons();
 
-function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1500);}
+function toast(m,long){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),long?3200:1500);}
 function updProg(){
   const{done,tot}=countProgress(ck);
   const p=tot?Math.round(done/tot*100):0;
