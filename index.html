@@ -138,11 +138,47 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .role-btn.re{border-color:var(--ink);background:var(--ink);color:#fff;}
 .role-btn .rt{font-weight:700;font-size:.85rem;}
 .role-btn .rs{font-weight:400;font-size:.63rem;opacity:.7;display:block;}
+/* PENDING / UNCOMPLETED WORK SECTION */
+.pend-banner{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 13px;border-radius:11px;margin-bottom:10px;cursor:pointer;font-weight:600;font-size:.78rem;border:1.5px solid;}
+.pend-banner.warn{background:#fff4e0;border-color:#f0b93d;color:#8a5a00;}
+.pend-banner.ok{background:#e9f9ef;border-color:#6ddc9a;color:#1a7a44;}
+.pend-banner .pb-l{display:flex;align-items:center;gap:8px;}
+.pend-banner .pb-arrow{transition:transform .2s;font-size:.7rem;}
+.pend-banner.open .pb-arrow{transform:rotate(180deg);}
+.pend-panel{display:none;margin-bottom:14px;border:1.5px solid var(--bdr);border-radius:11px;overflow:hidden;background:var(--paper);}
+.pend-panel.open{display:block;}
+.pend-day{padding:10px 13px;border-bottom:1px solid var(--bdr);}
+.pend-day:last-child{border-bottom:none;}
+.pend-day-hdr{font-size:.72rem;font-weight:700;color:var(--inkm);margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+.pend-day-hdr .pdate{color:var(--ink);}
+.pend-items{display:flex;flex-direction:column;gap:5px;}
 .sync-overlay{position:fixed;inset:0;background:var(--bg);z-index:1500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;}
 .sync-overlay.hide{display:none;}
 .sync-txt{font-size:.8rem;color:var(--inkm);font-weight:500;}
 body.viewer-mode .ti{cursor:default;}
 body.viewer-mode .ti:active{transform:none;}
+/* SIDEBAR / LEADERBOARD */
+.side-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1690;}
+.side-backdrop.show{display:block;}
+.side-drawer{position:fixed;top:0;right:-300px;width:280px;max-width:85vw;height:100%;background:var(--paper);box-shadow:-8px 0 24px rgba(0,0,0,.18);z-index:1700;transition:right .25s;padding:20px 16px;overflow-y:auto;}
+.side-drawer.open{right:0;}
+.side-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.side-hdr-title{font-family:'Playfair Display',serif;font-weight:900;font-size:1rem;}
+.side-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--inkm);line-height:1;}
+.side-total{font-size:.66rem;font-weight:700;color:var(--inkm);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px;}
+.side-user{border:1.5px solid var(--bdr);border-radius:10px;padding:11px 12px;margin-bottom:10px;cursor:pointer;transition:border-color .15s;}
+.side-user:hover{border-color:var(--ink);}
+.side-user.active{border-color:var(--ink);background:#f7f5f0;}
+.su-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:6px;}
+.su-name{font-weight:700;font-size:.82rem;}
+.su-you{font-weight:400;font-size:.63rem;color:var(--inkm);}
+.su-pct{font-weight:800;font-size:.82rem;flex-shrink:0;}
+.su-bar{height:6px;border-radius:99px;background:var(--bdr);overflow:hidden;margin-bottom:5px;}
+.su-fill{height:100%;background:var(--ink);border-radius:99px;transition:width .3s;}
+.su-sub{font-size:.65rem;color:var(--inkm);}
+.side-hint{font-size:.65rem;color:var(--inkm);margin-top:6px;line-height:1.4;}
+.peek-banner{display:none;align-items:center;gap:6px;background:#eef3fb;border:1.5px solid #7fa8d9;color:#1a4d8a;padding:9px 13px;border-radius:10px;margin-bottom:10px;font-size:.75rem;font-weight:600;flex-wrap:wrap;}
+.peek-back{text-decoration:underline;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -154,7 +190,10 @@ body.viewer-mode .ti:active{transform:none;}
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
       <div class="fh-pct" id="hPct">0%</div>
-      <button class="acct-btn" id="acctBtn" onclick="acctClick()">👁️ Viewer</button>
+      <div style="display:flex;gap:5px;">
+        <button class="acct-btn" id="sidebarBtn" onclick="toggleSidebar()">👥 Users</button>
+        <button class="acct-btn" id="acctBtn" onclick="acctClick()">👁️ Viewer</button>
+      </div>
     </div>
   </div>
   <div class="bw"><div class="bar" id="hBar"></div></div>
@@ -174,6 +213,7 @@ body.viewer-mode .ti:active{transform:none;}
 </div>
 
 <div class="wrap">
+  <div class="peek-banner" id="peekBanner"></div>
   <div class="legend">
     <div class="leg"><div class="ld" style="background:var(--p5)"></div>P5 Auditing — Theory</div>
     <div class="leg"><div class="ld" style="background:var(--p6a)"></div>P6A FM — Practical</div>
@@ -182,29 +222,49 @@ body.viewer-mode .ti:active{transform:none;}
     <div class="leg"><div class="ld" style="background:var(--moc)"></div>Mock Test</div>
     <div class="leg"><div class="ld" style="background:var(--red)"></div>Exam</div>
   </div>
+  <div id="pendWrap"></div>
   <div id="tt"></div>
 </div>
 
 <button class="fab" onclick="goToday()">📍</button>
 <div class="toast" id="toast"></div>
 
+<div class="side-backdrop" id="sideBackdrop" onclick="toggleSidebar()"></div>
+<div class="side-drawer" id="sideDrawer">
+  <div class="side-hdr">
+    <div class="side-hdr-title">👥 User Progress</div>
+    <button class="side-close" onclick="toggleSidebar()">✕</button>
+  </div>
+  <div id="sideBody"></div>
+  <div class="side-hint">Tap a name to view that person's full schedule. Only each person can edit their own tasks.</div>
+</div>
+
 <div class="modal-bg" id="roleModal">
   <div class="modal-box">
     <div class="modal-title">Welcome 👋</div>
-    <div class="modal-sub">Are you viewing progress, or updating it?</div>
-    <button class="role-btn re" onclick="chooseEditor()">
-      <div>🔓</div><div><span class="rt">I'm the Editor</span><span class="rs">Log in to update tasks</span></div>
-    </button>
+    <div class="modal-sub">Are you updating your progress, or just viewing?</div>
+    <div id="roleUserBtns"></div>
     <button class="role-btn" onclick="chooseViewer()">
-      <div>👁️</div><div><span class="rt">I'm just Viewing</span><span class="rs">See progress, no login needed</span></div>
+      <div>👁️</div><div><span class="rt">I'm just Viewing</span><span class="rs">See anyone's progress, no login needed</span></div>
     </button>
+  </div>
+</div>
+
+<div class="modal-bg" id="viewerPickModal">
+  <div class="modal-box">
+    <div class="modal-title">Whose progress would you like to view?</div>
+    <div class="modal-sub">Read-only — you won't be able to change anything.</div>
+    <div id="viewerPickBtns"></div>
+    <div class="modal-btns" style="margin-top:4px;">
+      <button class="modal-btn ghost" onclick="document.getElementById('viewerPickModal').classList.remove('show')">Cancel</button>
+    </div>
   </div>
 </div>
 
 <div class="modal-bg" id="loginModal">
   <div class="modal-box">
-    <div class="modal-title">Editor Login</div>
-    <div class="modal-sub">Only Varshini needs to log in.</div>
+    <div class="modal-title" id="loginTitle">Editor Login</div>
+    <div class="modal-sub">Enter your password to update your own progress.</div>
     <input class="modal-input" id="loginEmail" type="email" placeholder="Email" autocomplete="username"/>
     <input class="modal-input" id="loginPass" type="password" placeholder="Password" autocomplete="current-password"/>
     <div class="modal-err" id="loginErr"></div>
@@ -570,9 +630,6 @@ const S=[
 ];
 
 // ═══════════════════
-//  STATE + LOGIC
-// ═══════════════════
-// ═══════════════════
 //  FIREBASE SETUP
 // ═══════════════════
 const firebaseConfig={
@@ -587,92 +644,218 @@ const firebaseConfig={
 firebase.initializeApp(firebaseConfig);
 const fbAuth=firebase.auth();
 const fbDb=firebase.database();
-const progRef=fbDb.ref('progress');
 
-let ck={},cf='all',isEditor=false,firstLoad=true,authChecked=false,roleChosen=false;
+// ═══════════════════
+//  MULTI-USER STATE
+// ═══════════════════
+// Each user has their own progress tree at /progress/{id}/... — same schedule (S array),
+// completely separate completion data. Add/remove users by editing this list + creating
+// a matching Firebase Auth account with the same email.
+const USERS=[
+  {id:'varshini',name:'Varshini',email:'varshini@examprep.com'},
+  {id:'dhanush',name:'Dhanush',email:'dhanush@examprep.com'}
+];
+
+let ck={},cf='all';
+let mode=null;          // null | 'editor' | 'viewer'
+let editorId=null;      // which USERS[].id this browser is authenticated as
+let activeId=null;      // whose progress is currently shown in the main timeline
+let pendingEditorId=null;
+let allProgress={};     // {varshini:{...ck}, dhanush:{...ck}}
+USERS.forEach(u=>allProgress[u.id]={});
+let firstLoad=true,authChecked=false,roleChosen=false,sidebarOpen=false;
 
 function tk(d,si,ti){return`${d.replace(/ /g,'_')}_s${si}_t${ti}`;}
 function mrk(d){return`${d.replace(/ /g,'_')}_mr`;}
+function userName(id){const u=USERS.find(x=>x.id===id);return u?u.name:id;}
+function countProgress(pd){
+  let tot=0,don=0;
+  S.forEach(d=>{
+    if(d.mr){tot++;if(pd[mrk(d.date)])don++;}
+    if(d.slots)d.slots.forEach((s,si)=>{s.tk.forEach((_,ti)=>{tot++;if(pd[tk(d.date,si,ti)])don++;});});
+  });
+  return{done:don,tot};
+}
+
+function setActive(id){
+  activeId=id;
+  ck=allProgress[id]||{};
+  updatePeekBanner();
+  updateAcctBtn();
+  render();
+}
 
 function tog(key){
-  if(!isEditor){toast('👁️ View-only — log in as editor to update');return;}
+  if(mode!=='editor'){toast('👁️ View-only — log in to update your own progress');return;}
+  if(activeId!==editorId){toast('👀 Read-only — this is someone else\u2019s board');return;}
   const newVal=!ck[key];
-  progRef.child(key).set(newVal); // live listener re-renders for everyone
+  fbDb.ref('progress/'+editorId+'/'+key).set(newVal); // live listener re-renders for everyone
   toast(newVal?'✅ Done!':'↩️ Unmarked');
 }
 
-// Real-time sync: fires on load AND whenever Varshini (or anyone) updates data
-progRef.on('value',snap=>{
-  ck=snap.val()||{};
-  document.getElementById('syncOverlay').classList.add('hide');
-  render();
-  if(firstLoad){firstLoad=false;setTimeout(goToday,300);}
-},err=>{
-  document.getElementById('syncOverlay').classList.add('hide');
-  toast('⚠️ Connection error — check internet');
-  console.error(err);
+// Permanent listeners for BOTH users — needed for the sidebar leaderboard even when
+// you're only actively viewing one person's schedule.
+USERS.forEach(u=>{
+  fbDb.ref('progress/'+u.id).on('value',snap=>{
+    allProgress[u.id]=snap.val()||{};
+    if(u.id===activeId)ck=allProgress[u.id];
+    document.getElementById('syncOverlay').classList.add('hide');
+    renderSidebar();
+    if(activeId)render();
+    if(firstLoad){firstLoad=false;setTimeout(()=>{if(document.getElementById('ta'))goToday();},300);}
+  },err=>{
+    document.getElementById('syncOverlay').classList.add('hide');
+    toast('⚠️ Connection error — check internet');
+    console.error(err);
+  });
 });
 
-// Auth state — flips editor mode on/off automatically
+// Auth state — resolves who (if anyone) this browser is logged in as
 fbAuth.onAuthStateChanged(user=>{
-  isEditor=!!user;
   authChecked=true;
-  const btn=document.getElementById('acctBtn');
-  if(isEditor){
-    btn.textContent='🔓 Editor';btn.classList.add('editor');document.body.classList.remove('viewer-mode');
-    document.getElementById('roleModal').classList.remove('show');
-    document.getElementById('loginModal').classList.remove('show');
-    roleChosen=true;
+  if(user){
+    const matched=USERS.find(u=>u.email===user.email);
+    if(matched){
+      mode='editor';editorId=matched.id;roleChosen=true;
+      document.getElementById('roleModal').classList.remove('show');
+      document.getElementById('loginModal').classList.remove('show');
+      document.getElementById('viewerPickModal').classList.remove('show');
+      setActive(editorId);
+    }
   }else{
-    btn.textContent='👁️ Viewer';btn.classList.remove('editor');document.body.classList.add('viewer-mode');
+    if(mode==='editor'){mode=null;editorId=null;activeId=null;}
     if(!roleChosen)document.getElementById('roleModal').classList.add('show');
   }
-  render();
+  updateAcctBtn();
 });
 
-function chooseEditor(){
+// ---- Role selection (initial) ----
+function buildRoleButtons(){
+  const c=document.getElementById('roleUserBtns');
+  if(!c)return;
+  c.innerHTML=USERS.map(u=>
+    `<button class="role-btn re" onclick="chooseEditor('${u.id}')"><div>🔓</div><div><span class="rt">I'm ${u.name}</span><span class="rs">Log in to update my progress</span></div></button>`
+  ).join('');
+}
+function chooseEditor(userId){
+  pendingEditorId=userId;
+  const u=USERS.find(x=>x.id===userId);
   document.getElementById('roleModal').classList.remove('show');
-  document.getElementById('loginModal').classList.add('show');
+  const emailEl=document.getElementById('loginEmail');
+  emailEl.value=u.email;emailEl.readOnly=true;
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginTitle').textContent=u.name+' — Login';
   document.getElementById('loginErr').textContent='';
+  document.getElementById('loginModal').classList.add('show');
 }
 function chooseViewer(){
   roleChosen=true;
   document.getElementById('roleModal').classList.remove('show');
-  toast('👁️ Viewing in read-only mode');
+  buildViewerPickButtons();
+  document.getElementById('viewerPickModal').classList.add('show');
+}
+function buildViewerPickButtons(){
+  const c=document.getElementById('viewerPickBtns');
+  if(!c)return;
+  c.innerHTML=USERS.map(u=>
+    `<button class="role-btn" onclick="selectViewerUser('${u.id}')"><div>👁️</div><div><span class="rt">${u.name}'s Progress</span><span class="rs">View only, cannot edit</span></div></button>`
+  ).join('');
+}
+function selectViewerUser(userId){
+  mode='viewer';
+  document.getElementById('viewerPickModal').classList.remove('show');
+  setActive(userId);
+  toast('👁️ Viewing '+userName(userId)+'\u2019s progress');
 }
 function acctClick(){
-  if(isEditor){
+  if(mode==='editor'){
     if(confirm('Log out of editor mode?'))fbAuth.signOut();
   }else{
-    document.getElementById('loginModal').classList.add('show');
-    document.getElementById('loginErr').textContent='';
+    buildRoleButtons();
+    document.getElementById('roleModal').classList.add('show');
   }
 }
 function closeLogin(){
   document.getElementById('loginModal').classList.remove('show');
-  if(!isEditor && !roleChosen)document.getElementById('roleModal').classList.add('show');
+  document.getElementById('loginEmail').readOnly=false;
+  if(mode!=='editor')document.getElementById('roleModal').classList.add('show');
 }
 function doLogin(){
   const email=document.getElementById('loginEmail').value.trim();
   const pass=document.getElementById('loginPass').value;
   const errEl=document.getElementById('loginErr');
-  if(!email||!pass){errEl.textContent='Enter both email and password';return;}
+  if(!email||!pass){errEl.textContent='Enter your password';return;}
   errEl.textContent='Logging in…';
   fbAuth.signInWithEmailAndPassword(email,pass)
-    .then(()=>{closeLogin();toast('🔓 Editor mode on');})
+    .then(()=>{toast('🔓 Logged in');})
     .catch(e=>{errEl.textContent='❌ Wrong email or password';});
 }
+function updateAcctBtn(){
+  const btn=document.getElementById('acctBtn');
+  if(!btn)return;
+  if(mode==='editor'){
+    btn.textContent='🔓 '+userName(editorId);
+    btn.classList.add('editor');
+    document.body.classList.remove('viewer-mode');
+  }else{
+    btn.textContent=(mode==='viewer'&&activeId)?'👁️ '+userName(activeId):'👁️ Viewer';
+    btn.classList.remove('editor');
+    document.body.classList.add('viewer-mode');
+  }
+}
+function updatePeekBanner(){
+  const el=document.getElementById('peekBanner');
+  if(!el)return;
+  if(mode==='editor'&&activeId&&activeId!==editorId){
+    el.style.display='flex';
+    el.innerHTML=`👀 Viewing <b>${userName(activeId)}</b>'s board (read-only) &nbsp;·&nbsp; <span class="peek-back" onclick="setActive('${editorId}')">Back to My Progress</span>`;
+  }else{
+    el.style.display='none';
+  }
+}
+
+// ---- Sidebar leaderboard ----
+function toggleSidebar(){
+  sidebarOpen=!sidebarOpen;
+  document.getElementById('sideDrawer').classList.toggle('open',sidebarOpen);
+  document.getElementById('sideBackdrop').classList.toggle('show',sidebarOpen);
+  if(sidebarOpen)renderSidebar();
+}
+function renderSidebar(){
+  const wrap=document.getElementById('sideBody');
+  if(!wrap)return;
+  let rows='';
+  USERS.forEach(u=>{
+    const{done,tot}=countProgress(allProgress[u.id]||{});
+    const pct=tot?Math.round(done/tot*100):0;
+    const isYou=mode==='editor'&&u.id===editorId;
+    const isActive=u.id===activeId;
+    rows+=`<div class="side-user${isActive?' active':''}" onclick="peekUser('${u.id}')">
+      <div class="su-top"><span class="su-name">${u.name}${isYou?' <span class="su-you">(You)</span>':''}</span><span class="su-pct">${pct}%</span></div>
+      <div class="su-bar"><div class="su-fill" style="width:${pct}%"></div></div>
+      <div class="su-sub">${done} / ${tot} tasks done</div>
+    </div>`;
+  });
+  wrap.innerHTML=`<div class="side-total">Total Users: ${USERS.length}</div>${rows}`;
+}
+function peekUser(userId){
+  if(mode==='viewer'||mode==='editor'){
+    setActive(userId);
+    toast(mode==='editor'&&userId===editorId?'🔓 Back to your board':'👀 Viewing '+userName(userId)+'\u2019s progress');
+  }
+  toggleSidebar();
+}
+
+buildRoleButtons();
+buildViewerPickButtons();
+
 function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1500);}
 function updProg(){
-  let tot=0,don=0;
-  S.forEach(d=>{
-    if(d.mr){tot++;if(ck[mrk(d.date)])don++;}
-    if(d.slots)d.slots.forEach((s,si)=>{s.tk.forEach((_,ti)=>{tot++;if(ck[tk(d.date,si,ti)])don++;});});
-  });
-  const p=tot?Math.round(don/tot*100):0;
+  const{done,tot}=countProgress(ck);
+  const p=tot?Math.round(done/tot*100):0;
   document.getElementById('hBar').style.width=p+'%';
   document.getElementById('hPct').textContent=p+'%';
-  document.getElementById('hCnt').textContent=`${don} / ${tot} tasks completed`;
+  document.getElementById('hCnt').textContent=`${done} / ${tot} tasks completed`;
 }
 function updCd(){
   const n=new Date();n.setHours(0,0,0,0);
@@ -682,6 +865,59 @@ function updCd(){
   document.getElementById('p6d').textContent=p6>0?p6:(p6===0?'🎯 TODAY':'Done ✅');
 }
 function pDt(s){const m={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};const[d,mo]=s.split(' ');return new Date(2026,m[mo],+d);}
+
+// ═══════════════════
+//  PENDING / UNCOMPLETED WORK
+// ═══════════════════
+let pendOpen=false;
+function togPend(){pendOpen=!pendOpen;renderPending();}
+function getPendingDays(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const out=[];
+  S.forEach(d=>{
+    if(!d.date||!d.slots)return; // skip phase markers & exam-day cards (no checkable tasks)
+    const dDate=pDt(d.date);
+    if(dDate>today)return; // only today & past days count as "due"
+    const items=[];
+    if(d.mr){
+      const mk=mrk(d.date);
+      if(!ck[mk])items.push({label:'🌅 Morning Revision',sub:d.mr,key:mk});
+    }
+    d.slots.forEach((s,si)=>{
+      s.tk.forEach((t,ti)=>{
+        const key=tk(d.date,si,ti);
+        if(!ck[key])items.push({label:s.ti,sub:t,key});
+      });
+    });
+    if(items.length)out.push({date:d.date,dow:d.dow,tag:d.tag,lbl:d.lbl,items,isToday:+dDate===+today});
+  });
+  return out;
+}
+function renderPending(){
+  const wrap=document.getElementById('pendWrap');
+  if(!wrap)return;
+  const pending=getPendingDays();
+  const totalItems=pending.reduce((a,d)=>a+d.items.length,0);
+  if(totalItems===0){
+    wrap.innerHTML=`<div class="pend-banner ok"><div class="pb-l">✅ <span>All caught up — no pending work from earlier days!</span></div></div>`;
+    return;
+  }
+  const dayWord=pending.length===1?'day':'days';
+  let panelHtml='';
+  pending.forEach(d=>{
+    const dlabel=d.tag==='rev'||d.tag==='mock'||d.tag==='eve'?d.lbl:`${d.dow}, ${d.date}`;
+    const items=d.items.map(it=>{
+      return `<div class="ti" onclick="tog('${it.key}')"><div class="cb"></div><span><b>${it.label}</b>${it.sub?' — '+it.sub:''}</span></div>`;
+    }).join('');
+    panelHtml+=`<div class="pend-day"><div class="pend-day-hdr">${d.isToday?'📍 Today':'⏮️'} <span class="pdate">${dlabel}</span> · ${d.items.length} pending</div><div class="pend-items">${items}</div></div>`;
+  });
+  wrap.innerHTML=`
+    <div class="pend-banner warn${pendOpen?' open':''}" onclick="togPend()">
+      <div class="pb-l">⚠️ <span>${totalItems} pending task${totalItems===1?'':'s'} from ${pending.length} ${dayWord}</span></div>
+      <div class="pb-arrow">▼</div>
+    </div>
+    <div class="pend-panel${pendOpen?' open':''}">${panelHtml}</div>`;
+}
 function flt(f,b){cf=f;document.querySelectorAll('.tb').forEach(x=>x.className='tb');b.classList.add('a-'+f);render();}
 function goToday(){const e=document.getElementById('ta');if(e)e.scrollIntoView({behavior:'smooth',block:'center'});else toast('🎉 Exam time!');}
 function pB(p){if(p==='3/4')return`<span class="pp pp3">3/4</span>`;if(p==='1/4')return`<span class="pp pp1">1/4</span>`;if(p==='moc')return`<span class="pp ppm">Mock</span>`;return`<span class="pp ppr">Rev</span>`;}
@@ -706,6 +942,7 @@ function bSlots(d){
   return h;
 }
 function render(){
+  renderPending();
   const wrap=document.getElementById('tt');
   const today=new Date();today.setHours(0,0,0,0);
   let html='',tdone=false;
